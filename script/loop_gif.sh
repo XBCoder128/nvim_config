@@ -32,14 +32,14 @@ IMAGE_VALUES=()
 
 for image in $IMAGES; do
     IMAGE_VALUES+=$(chafa $image --format symbols --symbols vhalf --size 56x25 --stretch)
-  # 循环体
+    # 循环体
 done
 
 while true
 do
     for img_value in $IMAGE_VALUES; do
         echo $img_value
-        sleep $DELAY 
+        sleep $DELAY
         clear
     done
 done

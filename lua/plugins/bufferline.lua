@@ -136,7 +136,7 @@ return {
                     bg = '#282934',
                 },
                 duplicate_selected = {
-                    bg = '#282934',
+                    bg = '#393B48',
                 },
                 duplicate_visible = {
                     bg = '#282934',
