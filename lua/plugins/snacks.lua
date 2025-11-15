@@ -85,8 +85,12 @@ return {
                     {
                         indent = 4,
                         section = "terminal",
+                        ttl = 1,
                         pane = 2,
-                        cmd = "chafa ~/.config/maodie.png --format symbols --symbols vhalf --size 56x25 --stretch; sleep .1",
+                        -- cmd = "chafa ~/.config/nvim/image/nvim.png --format symbols --symbols vhalf --size 56x25 --stretch && sleep 1&&clear",
+                        cmd = "zsh ~/.config/nvim/script/loop_gif.sh ~/.config/nvim/image/gif_1 0.15",
+                        -- cmd = "chafa ~/.config/nvim/image/result.gif --format symbols --symbols vhalf --size 20x10 --stretch -d 0 && \033[0;0H",
+                        -- cmd = "chafa ~/.config/nvim/image/result.gif --format symbols --symbols vhalf --size 20x10 --stretch -d 0 && \033[0;0H",
                         height = 30,
                     },
                 },
