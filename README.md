@@ -22,3 +22,6 @@ brew install git-delta
 
 # npm install -g tree-sitter-cli
 ```
+
+# Dashboard
+![example.gif](./image/example.gif)

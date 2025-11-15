@@ -85,7 +85,7 @@ return {
                     {
                         indent = 4,
                         section = "terminal",
-                        ttl = -1,
+                        ttl = -1, -- 避免最后试图写到缓存文件里，大于0的话退出会很慢
                         pane = 2,
                         -- cmd = "chafa ~/.config/nvim/image/nvim.png --format symbols --symbols vhalf --size 56x25 --stretch && sleep 1&&clear",
                         cmd = "zsh ~/.config/nvim/script/loop_gif.sh ~/.config/nvim/image/ikun 0.08",
