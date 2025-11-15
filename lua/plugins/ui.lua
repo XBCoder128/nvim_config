@@ -1,5 +1,5 @@
 return {
-    {
+    { -- 状态栏
         'nvim-lualine/lualine.nvim',
         dependencies = {
             'nvim-tree/nvim-web-devicons',
@@ -12,7 +12,7 @@ return {
                 section_separators = { left = "\u{e0c6}", right = "\u{e0c7}" },
             },
             extensions = { "nvim-tree" },
-            sections = {
+            sections = { -- 底部状态栏
                 lualine_a = {
                     {
                         "mode",
@@ -47,7 +47,7 @@ return {
                     }
                 },
             },
-            winbar = {
+            winbar = { -- 顶部状态栏
                 lualine_a = {
                     {
                         'filename',
@@ -55,22 +55,19 @@ return {
                         max_length = 20,
                         shorting_target = 20, -- Shortens path to leave 40 spaces in the window
                     },
-                },
-                lualine_b = {
                     {
                         function() return [[]] end,
-                        draw_empty = true
+                        draw_empty = true,
+                        padding = 2,
                     }
                 },
-                lualine_c = {
+                lualine_x = {
                     {
                         'searchcount',
                         color = { fg = '#333333', bg = '#CBA6F7', gui = 'bold' },
                         separator = { left = "\u{e0b6}", right = "\u{e0b4}" },
                         padding = 2,
-                    }
-                },
-                lualine_x = {
+                    },
                     "diagnostics",
                 },
                 lualine_y = {
@@ -78,11 +75,8 @@ return {
                         'lsp_status',
                         icon = '', -- f013
                         symbols = {
-                            -- Standard unicode symbols to cycle through for LSP progress:
                             spinner = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' },
-                            -- Standard unicode symbol for when LSP is done:
                             done = '✓',
-                            -- Delimiter inserted between LSP names:
                             separator = ' ',
                         },
                         -- List of LSP names to ignore (e.g., `null-ls`):
@@ -106,7 +100,7 @@ return {
 
             local macro_recording_component = {
                 show_macro_recording,
-                color = { fg = '#ffffff', bg = '#FF88C7' },
+                color = { fg = '#282934', bg = '#FF88C7' },
                 separator = { left = "\u{e0b6}", right = "\u{e0b4}" },
                 padding = 0,
             }
@@ -120,70 +114,13 @@ return {
                 icon = { '', align = 'left' },
             }
 
+            -- 展示宏录制状态
             table.insert(opts.sections.lualine_x, 1, macro_recording_component)
+            -- 展示 minuet 提供者状态
             table.insert(opts.winbar.lualine_x, 1, minuet_lualine_component)
 
             require('lualine').setup(opts)
         end
-    },
-    -- {
-    --     'romgrk/barbar.nvim',
-    --     dependencies = {
-    --         'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
-    --         'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-    --     },
-    --     init = function() vim.g.barbar_auto_setup = false end,
-    --     event = { "VeryLazy" },
-    --     opts = {
-    --         icons = {
-    --             pinned = { button = '', filename = true },
-    --             separator = {left = '▏', right = '▕'},
-    --         },
-    --         sidebar_filetypes = {
-    --             NvimTree = true,
-    --         },
-    --     },
-    --     version = '^1.0.0', -- optional: only update when a new 1.x version is released
-    -- },
-    {
-        "akinsho/bufferline.nvim",
-        dependencies = {
-            'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
-            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-            "moll/vim-bbye"
-        },
-        opts = {
-            options = {
-                lose_command = "Bdelete! %d",
-                right_mouse_command = "Bdelete! %d",
-                diagnostics = "nvim_lsp",
-                diagnostics_indicator = function(count, level, diagnostics_dict, context)
-                    local s = " "
-                    for e, n in pairs(diagnostics_dict) do
-                        local sym = e == "error" and " " or (e == "warning" and " " or "")
-                        s = s .. n .. sym
-                    end
-                    return s
-                end,
-                offsets = {
-                    {
-                        filetype = "NvimTree",
-                        text = "File Explorer",
-                        highlight = "Directory",
-                        text_align = "left",
-                    },
-                },
-                hover = {
-                    enabled = true,
-                    delay = 200,
-                    reveal = { 'close' }
-                },
-                indicator = {
-                    style = 'underline',
-                },
-                separator_style = { '▏', '▕' },
-            },
-        },
     },
     {
         'nvim-tree/nvim-tree.lua',
@@ -315,48 +252,10 @@ return {
         },
     },
     {
-        'nvimdev/dashboard-nvim',
-        event = 'VimEnter',
-        config = function()
-            require('dashboard').setup {
-                theme = 'hyper',
-                disable_move = true,
-                config = {
-                    week_header = {
-                        enable = true,
-                    },
-                    shortcut = {
-                        { desc = '󰊳 Update', group = '@property', action = 'Lazy update', key = 'u' },
-                        {
-                            icon = ' ',
-                            icon_hl = '@variable',
-                            desc = 'Files',
-                            group = 'Label',
-                            action = 'Telescope find_files',
-                            key = 'f',
-                        },
-                        {
-                            desc = ' Apps',
-                            group = 'DiagnosticHint',
-                            action = 'Telescope app',
-                            key = 'a',
-                        },
-                        {
-                            desc = ' dotfiles',
-                            group = 'Number',
-                            action = 'Telescope dotfiles',
-                            key = 'd',
-                        },
-                    },
-                }
-            }
-        end,
-        dependencies = { { 'nvim-tree/nvim-web-devicons' } }
-    },
-    {
         "lewis6991/gitsigns.nvim",
         opts = {
             signcolumn = true,
+            current_line_blame = true,
             on_attach = function(bufnr)
                 local gitsigns = require("gitsigns")
 
@@ -366,6 +265,7 @@ return {
                     vim.keymap.set(mode, lhs, rhs, opts)
                 end
 
+                -- 定位文件中的 git 变更
                 map("n", "]h", function() gitsigns.nav_hunk("next") end, { desc = "[Git] Next hunk" })
                 map("n", "]H", function() gitsigns.nav_hunk("last") end, { desc = "[Git] Last hunk" })
                 map("n", "[h", function() gitsigns.nav_hunk("prev") end, { desc = "[Git] Previews hunk" })
@@ -414,42 +314,42 @@ return {
             end
         },
     },
-    {
+    { -- 滚动条
         "petertriho/nvim-scrollbar",
         config = function()
             local colors = require("tokyonight.colors").setup()
 
             require('scrollbar').setup({
-                handle = {
-                    color = "#89B4FA",
+                handle = { -- 滚动条颜色
+                    color = "#7784BE",
                 },
-                throttle_ms = 16,
+                throttle_ms = 16, -- 滚动条更新频率
                 marks = {
-                    Search = { color = colors.orange },
-                    Error = { color = colors.error },
-                    Warn = { color = colors.warning },
-                    Info = { color = colors.info },
-                    Hint = { color = colors.hint },
-                    Misc = { color = colors.purple },
+                    Search = { color = colors.orange }, -- 搜索高亮颜色
+                    Error = { color = colors.error }, -- 错误高亮颜色
+                    Warn = { color = colors.warning }, -- 警告高亮颜色
+                    Info = { color = colors.info }, -- 信息高亮颜色
+                    Hint = { color = colors.hint }, -- 提示高亮颜色
+                    Misc = { color = colors.purple }, -- 杂项高亮颜色
                     GitAdd = {
-                        text = "┃",
-                        priority = 7,
-                        highlight = "GitSignsAdd",
+                        text = "┃", -- 添加高亮颜色
+                        priority = 7, -- 优先级
+                        highlight = "GitSignsAdd", -- 添加高亮颜色
                     },
                     GitChange = {
-                        text = "┃",
-                        priority = 6,
-                        highlight = "GitSignsChange",
+                        text = "┃", -- 修改高亮颜色
+                        priority = 6, -- 优先级
+                        highlight = "GitSignsChange", -- 修改高亮颜色
                     },
                 },
                 handlers = {
-                    cursor = true,
-                    diagnostic = true,
-                    gitsigns = true, -- Requires gitsigns
-                    handle = true,
-                    search = false,  -- Requires hlslens
-                    ale = false,     -- Requires ALE
-                },                   --
+                    cursor = true,     -- 光标高亮
+                    diagnostic = true, -- 诊断高亮
+                    gitsigns = true,   -- 需要 gitsigns
+                    handle = true,     -- 需要滚动条高亮
+                    search = false,     -- 需要 hlslens
+                    ale = false,       -- 需要 ALE
+                },
             })
         end,
     },
@@ -468,7 +368,7 @@ return {
             end,
             preview = {
                 win_config = {
-                    winhighlight = 'UFOPreviewFolded',
+                    winhighlight = 'Normal:UFOPreviewFolded',
                     winblend = 0
                 },
                 mappings = {

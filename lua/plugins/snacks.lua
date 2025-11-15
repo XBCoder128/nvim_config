@@ -65,7 +65,32 @@ return {
             },
             bigfile = { enabled = true },
             dashboard = {
-                enabled = false,
+                enabled = true,
+                preset = {
+                    header = [[
+███╗   ███╗     █████╗      ██████╗     ██████╗     ██╗    ███████╗
+████╗ ████║    ██╔══██╗    ██╔═══██╗    ██╔══██╗    ██║    ██╔════╝
+██╔████╔██║    ███████║    ██║   ██║    ██║  ██║    ██║    █████╗  
+██║╚██╔╝██║    ██╔══██║    ██║   ██║    ██║  ██║    ██║    ██╔══╝  
+██║ ╚═╝ ██║    ██║  ██║    ╚██████╔╝    ██████╔╝    ██║    ███████╗
+╚═╝     ╚═╝    ╚═╝  ╚═╝     ╚═════╝     ╚═════╝     ╚═╝    ╚══════╝]],
+                },
+                sections = {
+                    { section = "header" },
+                    {
+                        { section = "keys",   gap = 1, padding = 1 },
+                        { section = "startup" },
+                        
+                    },
+                    {
+                        indent = 4,
+                        section = "terminal",
+                        pane = 2,
+                        cmd = "chafa ~/.config/maodie.png --format symbols --symbols vhalf --size 56x25 --stretch; sleep .1",
+                        height = 30,
+                    },
+                },
+                
             },
             explorer = { enabled = false },
             indent = { enabled = true },

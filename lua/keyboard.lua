@@ -2,114 +2,112 @@ local map = vim.keymap.set
 
 opt = { noremap = true, silent = true }
 local function get_options(desc)
-    if desc then
-        return { noremap = true, silent = true, desc = desc }
-    end
-    return opt
+	if desc then
+		return { noremap = true, silent = true, desc = desc }
+	end
+	return opt
 end
 
 -- 检查是否是 nvim tree buffer
 local function is_nvim_tree_buf(buf)
-    local buf_name = vim.api.nvim_buf_get_name(buf)
-    local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
+	local buf_name = vim.api.nvim_buf_get_name(buf)
 
-    if buf_name:match("NvimTree") or filetype == "NvimTree" then
-        return true
-    end
+	if buf_name:match("NvimTree") then
+		return true
+	end
 
-    -- 尝试使用 nvim-tree 的工具函数检查
-    local ok, utils = pcall(require, "nvim-tree.utils")
-    if ok and utils and utils.is_nvim_tree_buf then
-        return utils.is_nvim_tree_buf(buf)
-    end
+	-- 尝试使用 nvim-tree 的工具函数检查
+	local ok, utils = pcall(require, "nvim-tree.utils")
+	if ok and utils and utils.is_nvim_tree_buf then
+		return utils.is_nvim_tree_buf(buf)
+	end
 
-    return false
+	return false
 end
 
 -- 检查 nvim tree 是否打开
 local function is_nvim_tree_open()
-    local wins = vim.api.nvim_list_wins()
+	local wins = vim.api.nvim_list_wins()
 
-    for _, win in ipairs(wins) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        if is_nvim_tree_buf(buf) then
-            return true
-        end
-    end
+	for _, win in ipairs(wins) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if is_nvim_tree_buf(buf) then
+			return true
+		end
+	end
 
-    return false
+	return false
 end
 
 -- 获取不包含 nvim tree 的窗口个数
 local function get_non_tree_win_count()
-    local wins = vim.api.nvim_list_wins()
-    local non_tree_wins = 0
+	local wins = vim.api.nvim_list_wins()
+	local non_tree_wins = 0
 
-    for _, win in ipairs(wins) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        if not is_nvim_tree_buf(buf) then
-            non_tree_wins = non_tree_wins + 1
-        end
-    end
+	for _, win in ipairs(wins) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if not is_nvim_tree_buf(buf) then
+			non_tree_wins = non_tree_wins + 1
+		end
+	end
 
-    return non_tree_wins
+	return non_tree_wins
 end
 
 -- 获取第一个非 nvim tree 的窗口
 local function get_first_non_tree_win()
-    local wins = vim.api.nvim_list_wins()
+	local wins = vim.api.nvim_list_wins()
 
-    for _, win in ipairs(wins) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        if not is_nvim_tree_buf(buf) then
-            return win
-        end
-    end
+	for _, win in ipairs(wins) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if not is_nvim_tree_buf(buf) then
+			return win
+		end
+	end
 
-    return nil
+	return nil
 end
 
 -- Lazy.nvim 快捷键
-map("n", "<leader>L", "<CMD>Lazy<CR>", {desc = "[Lazy] Open Lazy.nvim" })
+map("n", "<leader>L", "<CMD>Lazy<CR>", { desc = "[Lazy] Open Lazy.nvim" })
 
 -- 取消 s 默认功能
-map({"n", "x", "o"}, "s", "", opt)
+map({ "n", "x", "o" }, "s", "", opt)
 
 -- windows 分屏快捷键
 map("n", "sv", ":vsp<CR>", opt)
 map("n", "sh", ":sp<CR>", opt)
 
-map('n', '<A-z>', '<Cmd>set wrap!<CR>', opt)
-
+map("n", "<A-z>", "<Cmd>set wrap!<CR>", opt)
 
 -- 关闭当前标签
-map("n", "sc", function ()
-    -- 如果不包含 nvim tree 的窗口个数大于 1，才关闭
-    if get_non_tree_win_count() > 1 then
-        vim.cmd("close")
-    end
+map("n", "sc", function()
+	-- 如果不包含 nvim tree 的窗口个数大于 1，才关闭
+	if get_non_tree_win_count() > 1 then
+		vim.cmd("close")
+	end
 end, opt)
 
 -- 关闭其他标签
-map("n", "so", function ()
-    -- 如果不包含 nvim tree 的窗口个数大于 1，才关闭其他窗口
-    if get_non_tree_win_count() > 1 then
-        -- 检查 nvim tree 之前是否打开
-        local was_tree_open = is_nvim_tree_open()
+map("n", "so", function()
+	-- 如果不包含 nvim tree 的窗口个数大于 1，才关闭其他窗口
+	if get_non_tree_win_count() > 1 then
+		-- 检查 nvim tree 之前是否打开
+		local was_tree_open = is_nvim_tree_open()
 
-        -- 关闭其他窗口
-        vim.cmd("only")
+		-- 关闭其他窗口
+		vim.cmd("only")
 
-        -- 如果之前 nvim tree 是打开的，则再次打开
-        if was_tree_open then
-            vim.cmd("NvimTreeOpen")
-            -- 将焦点移动到代码窗口
-            local code_win = get_first_non_tree_win()
-            if code_win then
-                vim.api.nvim_set_current_win(code_win)
-            end
-        end
-    end
+		-- 如果之前 nvim tree 是打开的，则再次打开
+		if was_tree_open then
+			vim.cmd("NvimTreeOpen")
+			-- 将焦点移动到代码窗口
+			local code_win = get_first_non_tree_win()
+			if code_win then
+				vim.api.nvim_set_current_win(code_win)
+			end
+		end
+	end
 end, opt)
 
 -- Alt + hjkl  窗口之间跳转
@@ -119,8 +117,8 @@ map("n", "<A-k>", "<C-w>k", opt)
 map("n", "<A-l>", "<C-w>l", opt)
 
 -- 嵌入终端配置
-map("n", "<leader>T", ":sp | :resize 10 | terminal<CR> | i", get_options("[Terminal] Open horizontal terminal"))
-map("n", "<leader>Tv", ":vsp | terminal<CR> | i", get_options("[Terminal] Open vertical terminal"))
+map("n", "<C-`>", ":sp | :resize 15 | terminal<CR> | i", get_options("[Terminal] Open horizontal terminal"))
+map("n", "<C-`v>cd ", ":vsp | terminal<CR> | i", get_options("[Terminal] Open vertical terminal"))
 
 map("t", "<Esc>", "<C-\\><C-N><C-w>c", opt)
 map("t", "<A-h>", "<C-\\><C-N><C-w>h", opt)
@@ -160,7 +158,7 @@ map("n", "<C-h>", "^", opt)
 map("n", "<C-l>", "$", opt)
 
 -- nvim tree
-vim.api.nvim_set_keymap("n", "<A-m>", ":NvimTreeToggle<cr>", {silent = true, noremap = true})
+vim.api.nvim_set_keymap("n", "<A-m>", ":NvimTreeToggle<cr>", { silent = true, noremap = true })
 
 -- bufferline
 -- 左右Tab切换
@@ -177,5 +175,7 @@ map("n", "<leader>bc", ":BufferLinePickClose<CR>", get_options("[BufferLine] Clo
 map("n", "<A-z>", ":set wrap!<CR>", opt)
 
 -- 移动到行首行尾
-map({"n", "x", "o"}, "<S-H>", "^", get_options("[Move] Move to beginning of line"))
-map({"n", "x", "o"}, "<S-L>", "$", get_options("[Move] Move to end of line"))
+map({ "n", "x", "o" }, "<S-H>", "^", get_options("[Move] Move to beginning of line"))
+map({ "n", "x", "o" }, "<S-L>", "$", get_options("[Move] Move to end of line"))
+
+map("n", "//", "<Cmd>noh<CR>", get_options("[Search] Clear"))

@@ -9,9 +9,10 @@ return {
                     package_uninstalled = "✗"
                 }
             },
-            ensure_installed = {
-                "lua-language-server",
-            }
+            ensure_installed = {}
+        },
+        opts_extra = {
+            "ensure_installed"
         },
         config = function(_, opts)
             require("mason").setup(opts)
@@ -58,32 +59,13 @@ return {
                     border = "rounded",
                 },
             })
-
-            local capabilities = require('blink.cmp').get_lsp_capabilities()
-            vim.lsp.config('lua_ls', {
-                capabilities = capabilities
-            })
-            vim.lsp.enable('lua_ls')
         end
-    },
-    { -- 去除 vim 关键字找不到的情况
-        "folke/lazydev.nvim",
-        ft = "lua", -- only load on lua files
-        opts = {
-            library = {
-                -- See the configuration section for more details
-                -- Load luvit types when the `vim.uv` word is found
-                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-            },
-        },
     },
     { -- 代码格式化
         "stevearc/conform.nvim",
         event = "BufWritePre",
         opts = {
             formatters_by_ft = {
-                -- lua = { "stylua" },
-                -- Use the "_" filetype to run formatters on filetypes that don't have other formatters configured.
                 ["_"] = { "trim_whitespace" },
             },
 

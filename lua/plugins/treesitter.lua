@@ -4,23 +4,15 @@ return {
         branch = 'master',
         lazy = false,
         build = ":TSUpdate",
-        config = function ()
-            local configs = require("nvim-treesitter.configs")
-
-            configs.setup({
-                auto_install = true,
-                ensure_installed = { 
-                    "lua", "vim", "vimdoc", "c", "html", 
-                    "javascript", "markdown", "markdown_inline", 
-                    "latex", "css", "norg", "scss", "svelte", "tsx",
-                    "typst", "vue", "yaml", "json", "mermaid"
-                 },
-                sync_install = false,
-                highlight = {
-                    enable = true,
-                },
-                indent = { enable = true },
-            })
-        end
+        opts = {
+            auto_install = true,
+            ensure_installed = { "c", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html", "markdown", "markdown_inline", "mermaid" },
+            sync_install = false,
+            highlight = {
+                enable = true,
+            },
+            indent = { enable = true },
+        },
+        opts_extend = { "ensure_installed" },
     }
 }

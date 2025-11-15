@@ -6,7 +6,7 @@ vim.g.encoding = "UTF-8"
 
 -- 不可见字符的显示，这里只把空格显示为一个点
 vim.o.list = true
-vim.o.listchars = "space:·"
+vim.o.listchars = "space:·,tab:··"
 
 -- 样式
 vim.o.termguicolors = true
@@ -99,4 +99,4 @@ vim.o.updatetime = 300
 vim.o.timeoutlen = 500
 
 -- 搜索不要高亮
-vim.o.hlsearch = false
+vim.o.hlsearch = true
