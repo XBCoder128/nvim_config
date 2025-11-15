@@ -90,16 +90,28 @@ return {
                 win = {
                     input = {
                         keys = {
+                            -- 选择当前文件并向下移动光标
                             ["<Tab>"] = { "select_and_prev", mode = { "i", "n" } },
+                            -- 选择当前文件并向上移动光标
                             ["<S-Tab>"] = { "select_and_next", mode = { "i", "n" } },
+                            -- 历史记录向前
                             ["<A-Up>"] = { "history_back", mode = { "i", "n" } },
+                            -- 历史记录向后
                             ["<A-Down>"] = { "history_forward", mode = { "i", "n" } },
+
+                            -- 列表移动光标
                             ["<A-j>"] = { "list_down", mode = { "i", "n" } },
                             ["<A-k>"] = { "list_up", mode = { "i", "n" } },
+
+                            -- 预览窗口滚动
                             ["<C-u>"] = { "preview_scroll_up", mode = { "i", "n" } },
                             ["<C-d>"] = { "preview_scroll_down", mode = { "i", "n" } },
+
+                            -- 列表大幅度滚动
                             ["<A-u>"] = { "list_scroll_up", mode = { "i", "n" } },
                             ["<A-d>"] = { "list_scroll_down", mode = { "i", "n" } },
+
+                            -- 列表大幅度滚动
                             ["<C-j>"] = { "list_scroll_down", mode = { "i", "n" } },
                             ["<C-k>"] = { "list_scroll_up", mode = { "i", "n" } },
                         }
@@ -138,30 +150,51 @@ return {
         },
 
         keys = {
+            -- 关闭 tab 标签
             { "<A-c>",           function() require("snacks").bufdelete() end,                    desc = "[Snacks] Close buffer" },
 
+            -- git 相关窗口操作
+            -- - 查看行级提交信息
             { "<leader>sgl",     function() require("snacks").git.blame_line() end,               desc = "[Snacks] Git blame line" },
+            -- - 在浏览器打开对应文件
             { "<leader>sgb",     function() require("snacks").gitbrowse() end,                    desc = "[Snacks] Open git brower" },
+            -- - 查看git分之
             { "<leader>sgB",     function() require("snacks").picker.git_branches() end,          desc = "[Snacks] Git Branches" },
+            -- - 打开 lazygit
             { "<leader>G",       function() require("snacks").lazygit() end,                      desc = "[Snacks] LazyGit" },
 
+            -- 通知相关操作
             { "<leader>sn",      function() require("snacks").picker.notifications() end,         desc = "[Snacks] Notifications" },
             { "<leader>n",       function() require("snacks").notifier.show_history() end,        desc = "[Snacks] Notification show history" },
             { "<leader>un",      function() require("snacks").notifier.hide() end,                desc = "[Snacks] Notification hide" },
 
+            -- 文件/搜索相关操作
+            -- 全局智能搜索
             { "<leader><space>", function() require("snacks").picker.smart() end,                 desc = "[Snacks] Smart find file" },
+            -- 文件名搜索
             { "<leader>sf",      function() require("snacks").picker.files() end,                 desc = "[Snacks] Find file" },
+            -- 项目内搜索
             { "<leader>fp",      function() require("snacks").picker.projects() end,              desc = "[Snacks] Projects" },
+            -- 已开启的 tab 内搜索
             { "<leader>,",       function() require("snacks").picker.buffers() end,               desc = "[Snacks] Buffers" },
+            -- 项目内代码搜索
             { "<leader>/",       function() require("snacks").picker.grep() end,                  desc = "[Snacks] Grep" },
+            -- 已打开的 tab 内代码搜索
             { "<leader>sg",      function() require("snacks").picker.grep_buffers() end,          desc = "[Snacks] Grep Open Buffers" },
-            { "<leader>:",       function() require("snacks").picker.command_history() end,       desc = "[Snacks] Command History" },
+            -- 查看历史命令
+            { "<leader>;",       function() require("snacks").picker.command_history() end,       desc = "[Snacks] Command History" },
+            -- 打开诊断信息窗口
             { "<leader>sd",      function() require("snacks").picker.diagnostics() end,           desc = "[Snacks] Diagnostics" },
+            -- 打开拼写提示窗口
             { "<leader>sa",      function() require("snacks").picker.spelling() end,              desc = "[Snacks] Spelling" },
+            -- 打开历史跳转窗口
             { "<leader>sj",      function() require("snacks").picker.jumps() end,                 desc = "[Snacks] Jumps" },
+            -- 打开高亮配置窗口
             { "<leader>sh",      function() require("snacks").picker.highlights() end,            desc = "[Snacks] Highlights" },
+            -- 打开图标窗口
             { "<leader>si",      function() require("snacks").picker.icons() end,                 desc = "[Snacks] Icons" },
 
+            -- LSP 相关操作
             { "gd",              function() require("snacks").picker.lsp_definitions() end,       desc = "[Snacks] Goto Definitions" },
             { "gD",              function() require("snacks").picker.lsp_declarations() end,      desc = "[Snacks]Goto Declaration" },
             { "gr",              function() require("snacks").picker.lsp_references() end,        desc = "[Snacks] References" },
@@ -172,6 +205,7 @@ return {
             { "gci",             function() require("snacks").picker.lsp_incoming_calls() end,    desc = "[Snacks] Calls Incoming" },
             { "gco",             function() require("snacks").picker.lsp_outgoing_calls() end,    desc = "[Snacks] Calls Outgoing" },
 
+            -- 终端相关操作
             { "<leader>t",       function() require("snacks").terminal() end,                     desc = "[Snacks] Terminal" }
 
         },
@@ -198,13 +232,20 @@ return {
                     end
 
                     -- Create some toggle mappings
+                    -- 切换拼写提示
                     Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
+                    -- 切换自动换行
                     Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+                    -- 切换相对行号
                     Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
+                    -- 显示/关闭语法提示
                     Snacks.toggle.diagnostics():map("<leader>ud")
+                    -- 显示/关闭行号
                     Snacks.toggle.line_number():map("<leader>ul")
+                    -- 显示/关闭代码折叠
                     Snacks.toggle.option("conceallevel",
                         { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map("<leader>uc")
+                    -- 显示/关闭树状语法
                     Snacks.toggle.treesitter():map("<leader>uT")
                     Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map(
                         "<leader>ub")

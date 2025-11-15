@@ -1,5 +1,5 @@
 return {
-    {
+    { -- LSP 服务器
         "mason-org/mason.nvim",
         opts = {
             ui = {
@@ -31,7 +31,7 @@ return {
             end
         end
     },
-    {
+    { -- LSP 配置
         'neovim/nvim-lspconfig',
         dependencies = { 'saghen/blink.cmp' },
 
@@ -66,7 +66,7 @@ return {
             vim.lsp.enable('lua_ls')
         end
     },
-    {
+    { -- 去除 vim 关键字找不到的情况
         "folke/lazydev.nvim",
         ft = "lua", -- only load on lua files
         opts = {
@@ -77,12 +77,12 @@ return {
             },
         },
     },
-    {
+    { -- 代码格式化
         "stevearc/conform.nvim",
         event = "BufWritePre",
         opts = {
             formatters_by_ft = {
-                lua = { "stylua" },
+                -- lua = { "stylua" },
                 -- Use the "_" filetype to run formatters on filetypes that don't have other formatters configured.
                 ["_"] = { "trim_whitespace" },
             },

@@ -277,7 +277,22 @@ return {
         "echasnovski/mini.diff",
         event = "VeryLazy",
         version = "*",
-        opts = {}
+        opts = {
+            mappings = {
+                -- Apply hunks inside a visual/operator region
+                apply = "",
+                -- Reset hunks inside a visual/operator region
+                reset = "",
+                -- Hunk range textobject to be used inside operator
+                -- Works also in Visual mode if mapping differs from apply and reset
+                textobject = "",
+                -- Go to hunk range in corresponding direction
+                goto_first = "",
+                goto_prev = "",
+                goto_next = "",
+                goto_last = "",
+            },
+        }
     },
     {
         "folke/which-key.nvim",
@@ -337,5 +352,244 @@ return {
             }
         end,
         dependencies = { { 'nvim-tree/nvim-web-devicons' } }
-    }
+    },
+    {
+        "lewis6991/gitsigns.nvim",
+        opts = {
+            signcolumn = true,
+            on_attach = function(bufnr)
+                local gitsigns = require("gitsigns")
+
+                local function map(mode, lhs, rhs, opts)
+                    opts = opts or {}
+                    opts.buffer = bufnr
+                    vim.keymap.set(mode, lhs, rhs, opts)
+                end
+
+                map("n", "]h", function() gitsigns.nav_hunk("next") end, { desc = "[Git] Next hunk" })
+                map("n", "]H", function() gitsigns.nav_hunk("last") end, { desc = "[Git] Last hunk" })
+                map("n", "[h", function() gitsigns.nav_hunk("prev") end, { desc = "[Git] Previews hunk" })
+                map("n", "[H", function() gitsigns.nav_hunk("first") end, { desc = "[Git] First hunk" })
+
+                -- Actions
+                map("n", "<leader>ggs", gitsigns.stage_hunk, { desc = "[Git] Stage hunk" })
+                -- stylua: ignore
+                map("v", "<leader>ggs", function() gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end,
+                    { desc = "[Git] Stage hunk (Visual)" })
+
+                map("n", "<leader>ggr", gitsigns.reset_hunk, { desc = "[Git] Reset hunk" })
+                -- stylua: ignore
+                map("v", "<leader>ggr", function() gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end,
+                    { desc = "[Git] Reset hunk (Visual)" })
+
+                map("n", "<leader>ggS", gitsigns.stage_buffer, { desc = "[Git] Stage buffer" })
+                map("n", "<leader>ggR", gitsigns.reset_buffer, { desc = "[Git] Reset buffer" })
+
+                map("n", "<leader>ggp", gitsigns.preview_hunk, { desc = "[Git] Preview hunk" })
+                map("n", "<leader>ggP", gitsigns.preview_hunk_inline, { desc = "[Git] Preview hunk inline" })
+
+                -- Toggles
+                require("snacks")
+                    .toggle({
+                        name = "line blame",
+                        get = function()
+                            return require("gitsigns.config").config.current_line_blame
+                        end,
+                        set = function(enabled)
+                            require("gitsigns").toggle_current_line_blame(enabled)
+                        end,
+                    })
+                    :map("<leader>tgb")
+                require("snacks")
+                    .toggle({
+                        name = "word diff",
+                        get = function()
+                            return require("gitsigns.config").config.word_diff
+                        end,
+                        set = function(enabled)
+                            require("gitsigns").toggle_word_diff(enabled)
+                        end,
+                    })
+                    :map("<leader>tgw")
+            end
+        },
+    },
+    {
+        "petertriho/nvim-scrollbar",
+        config = function()
+            local colors = require("tokyonight.colors").setup()
+
+            require('scrollbar').setup({
+                handle = {
+                    color = "#89B4FA",
+                },
+                throttle_ms = 16,
+                marks = {
+                    Search = { color = colors.orange },
+                    Error = { color = colors.error },
+                    Warn = { color = colors.warning },
+                    Info = { color = colors.info },
+                    Hint = { color = colors.hint },
+                    Misc = { color = colors.purple },
+                    GitAdd = {
+                        text = "┃",
+                        priority = 7,
+                        highlight = "GitSignsAdd",
+                    },
+                    GitChange = {
+                        text = "┃",
+                        priority = 6,
+                        highlight = "GitSignsChange",
+                    },
+                },
+                handlers = {
+                    cursor = true,
+                    diagnostic = true,
+                    gitsigns = true, -- Requires gitsigns
+                    handle = true,
+                    search = false,  -- Requires hlslens
+                    ale = false,     -- Requires ALE
+                },                   --
+            })
+        end,
+    },
+    {
+        "norcalli/nvim-colorizer.lua",
+        config = function()
+            require('colorizer').setup()
+        end,
+    },
+    {
+        "kevinhwang91/nvim-ufo",
+        dependencies = { "kevinhwang91/promise-async" },
+        opts = {
+            provider_selector = function(_, _, _)
+                return { "treesitter", "indent" }
+            end,
+            preview = {
+                win_config = {
+                    winhighlight = 'UFOPreviewFolded',
+                    winblend = 0
+                },
+                mappings = {
+                    scrollU = '<C-u>',
+                    scrollD = '<C-d>',
+                    jumpTop = '[',
+                    jumpBot = ']'
+                }
+            },
+
+            open_fold_hl_timeout = 0,
+            fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+                local newVirtText = {}
+                local suffix = (" 󰁂 %d "):format(endLnum - lnum)
+                local sufWidth = vim.fn.strdisplaywidth(suffix)
+                local targetWidth = width - sufWidth
+                local curWidth = 0
+                for _, chunk in ipairs(virtText) do
+                    local chunkText = chunk[1]
+                    local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+                    if targetWidth > curWidth + chunkWidth then
+                        table.insert(newVirtText, chunk)
+                    else
+                        chunkText = truncate(chunkText, targetWidth - curWidth)
+                        local hlGroup = chunk[2]
+                        table.insert(newVirtText, { chunkText, hlGroup })
+                        chunkWidth = vim.fn.strdisplaywidth(chunkText)
+                        -- str width returned from truncate() may less than 2nd argument, need padding
+                        if curWidth + chunkWidth < targetWidth then
+                            suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+                        end
+                        break
+                    end
+                    curWidth = curWidth + chunkWidth
+                end
+                table.insert(newVirtText, { suffix, "MoreMsg" })
+                return newVirtText
+            end,
+        },
+
+        init = function()
+            vim.o.foldenable = true
+            vim.o.foldcolumn = "0" -- '0' is not bad
+            vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+            vim.o.foldlevelstart = 99
+            vim.opt.fillchars = {
+                fold = " ",
+                foldopen = "▾",
+                foldsep = "│",
+                foldclose = "▸",
+            }
+        end,
+
+        config = function(_, opts)
+            require("ufo").setup(opts)
+
+            -- Ensure our ufo foldlevel is set for the buffer
+            vim.api.nvim_create_autocmd("BufReadPre", {
+                callback = function()
+                    vim.b.ufo_foldlevel = 0
+                end,
+            })
+
+            ---@param num integer Set the fold level to this number
+            local set_buf_foldlevel = function(num)
+                vim.b.ufo_foldlevel = num
+                require("ufo").closeFoldsWith(num)
+            end
+
+            ---@param num integer The amount to change the UFO fold level by
+            local change_buf_foldlevel_by = function(num)
+                local foldlevel = vim.b.ufo_foldlevel or 0
+                -- Ensure the foldlevel can't be set negatively
+                if foldlevel + num >= 0 then
+                    foldlevel = foldlevel + num
+                else
+                    foldlevel = 0
+                end
+                set_buf_foldlevel(foldlevel)
+            end
+
+            -- Keymaps
+            vim.keymap.set("n", "K", function()
+                local winid = require("ufo").peekFoldedLinesUnderCursor()
+                if not winid then
+                    vim.lsp.buf.hover()
+                end
+            end)
+
+            -- stylua: ignore
+            vim.keymap.set("n", "zM", function() set_buf_foldlevel(0) end, { desc = "[UFO] Close all folds" })
+            vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "[UFO] Open all folds" })
+
+            vim.keymap.set("n", "zm", function()
+                local count = vim.v.count
+                if count == 0 then
+                    count = 1
+                end
+                change_buf_foldlevel_by(-count)
+            end, { desc = "[UFO] Fold More" })
+            vim.keymap.set("n", "zr", function()
+                local count = vim.v.count
+                if count == 0 then
+                    count = 1
+                end
+                change_buf_foldlevel_by(count)
+            end, { desc = "[UFO] Fold Less" })
+
+            -- 99% sure `zS` isn't mapped by default
+            vim.keymap.set("n", "zS", function()
+                if vim.v.count == 0 then
+                    vim.notify("No foldlevel given to set!", vim.log.levels.WARN)
+                else
+                    set_buf_foldlevel(vim.v.count)
+                end
+            end, { desc = "[UFO] Set foldlevel" })
+
+            -- Delete some predefined keymaps as they are not compatible with nvim-ufo
+            vim.keymap.set("n", "zE", "<NOP>", { desc = "Disabled" })
+            vim.keymap.set("n", "zx", "<NOP>", { desc = "Disabled" })
+            vim.keymap.set("n", "zX", "<NOP>", { desc = "Disabled" })
+        end,
+    },
 }

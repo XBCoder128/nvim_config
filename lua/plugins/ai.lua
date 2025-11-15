@@ -42,11 +42,5 @@ return {
                 }
             })
         end,
-    },
-    {
-        "lewis6991/gitsigns.nvim",
-    },
-    {
-        "petertriho/nvim-scrollbar",
     }
 }

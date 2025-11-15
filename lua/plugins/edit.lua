@@ -1,12 +1,12 @@
 return {
-    {
+    { -- 自动补全括号
         "windwp/nvim-autopairs",
         event = "InsertEnter",
         opts = {
             ignored_next_char = "[%w%.]",
         },
     },
-    {
+    { -- 撤销树
         "mbbill/undotree",
         keys = {
             { "<leader>ut", ":UndotreeToggle<CR>", desc = "Toggle undotree" },
@@ -27,7 +27,7 @@ return {
             ]])
         end,
     },
-    {
+    { -- 注释
         "numToStr/Comment.nvim",
         -- stylua: ignore
         keys = {
@@ -36,7 +36,7 @@ return {
         },
         config = true,
     },
-    {
+    { -- 环绕文本
         "echasnovski/mini.surround",
         version = "*",
         event = "BufReadPost",
@@ -46,7 +46,7 @@ return {
             { "s", "<NOP>", mode = { "n", "x", "o" } },
         },
     },
-    {
+    { -- 扩展 `a`/`i` 文本对象
         -- Extend `a`/`i` textobjects
         "echasnovski/mini.ai",
         version = "*",

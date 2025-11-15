@@ -19,15 +19,25 @@ return {
                 vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { bg = "NONE", fg = colors.warning})
                 vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { bg = "NONE", fg = colors.info})
                 vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { bg = "NONE", fg = colors.hint})
+                
+                -- git 变更展示高亮配置
+                vim.api.nvim_set_hl(0, "GitSignsAdd", { bg = "NONE", fg = "#47C769"})
+                vim.api.nvim_set_hl(0, "GitSignsChange", { bg = "NONE", fg = "#CBA6F7"})
+                vim.api.nvim_set_hl(0, "GitSignsDelete", { bg = "NONE", fg = "#F38BA8"})
+                vim.api.nvim_set_hl(0, "MiniDiffSignAdd", { bg = "NONE", fg = "#47C769"})
+                vim.api.nvim_set_hl(0, "MiniDiffSignChange", { bg = "NONE", fg = "#CBA6F7"})
+                vim.api.nvim_set_hl(0, "MiniDiffSignDelete", { bg = "NONE", fg = "#F38BA8"})
+
+                -- UFO 代码折叠浮窗预览 透明背景
+                vim.api.nvim_set_hl(0, "UFOPreviewFolded", { bg = "NONE"})
             end,
-            -- on_highlights = function(hl, c)
-            --     -- 增强注释可读性
-            --     hl.Comment = { fg = c.comment, italic = true, bold = true }
-            --     -- 调整关键字颜色
-            --     hl.Keyword = { italic = true }
-            --     -- 增强函数名可见性
-            --     hl.Function = { fg = c.blue, bold = true }
-            -- end
+
+            on_highlights = function(hl, c)
+                -- 调整关键字颜色
+                hl.Keyword = { bold = true }
+                -- 增强函数名可见性
+                hl.Function = { bold = true }
+            end
         },
         config = function(_, opts)
             require("tokyonight").setup(opts)
