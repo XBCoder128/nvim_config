@@ -179,3 +179,18 @@ map({ "n", "x", "o" }, "<S-H>", "^", get_options("[Move] Move to beginning of li
 map({ "n", "x", "o" }, "<S-L>", "$", get_options("[Move] Move to end of line"))
 
 map("n", "//", "<Cmd>noh<CR>", get_options("[Search] Clear"))
+
+-- Code Companion 相关快捷键
+map("v", "<leader>cm", ":CodeCompanion #{buffer} 帮我用中文写一些注释<CR>", get_options("[CodeCompanion] 自动注释"))
+map("v", "<leader>cr", ":CodeCompanion #{buffer} 帮我重构这段代码<CR>", get_options("[CodeCompanion] 代码重构"))
+map("v", "<leader>ce", ":CodeCompanionChat #{buffer} 帮我用中文解释下这段代码<CR>", get_options("[CodeCompanion] 代码解读"))
+map({ "n", "x", "o" }, "<leader>ai", function()
+	require("snacks").input.input(
+		{
+			prompt = "输入需求:",
+		},
+		function(input)
+			vim.cmd("CodeCompanion #{buffer} " .. input)
+		end
+	)
+end, get_options("[CodeCompanion] AI Coding"))
