@@ -1,11 +1,4 @@
-vim.api.nvim_create_autocmd("BufEnter", {
-	nested = true,
-	callback = function()
-		if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
-			vim.cmd("quit")
-		end
-	end,
-})
+
 
 -- auto open nvim-tree when open neovim
 local function open_nvim_tree(data)
@@ -15,22 +8,31 @@ local function open_nvim_tree(data)
 	-- buffer is a [No Name]
 	local no_name = data.file == "" and vim.bo[data.buf].buftype == ""
 
-	-- only files please
+	require("nvim-tree.api").tree.toggle({ focus = false, find_file = true })
+	
+	vim.api.nvim_create_autocmd("BufEnter", {
+		nested = true,
+		callback = function()
+			if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
+				vim.cmd("quit")
+			end
+		end,
+	})
+
+
 	if not real_file and not no_name then
 		return
 	end
+	
+	if not real_file or no_name then
+		local right_win = vim.api.nvim_get_current_win()
+		local right_buf = vim.api.nvim_win_get_buf(right_win)
+		require("snacks").dashboard.open({
+			buf = right_buf,
+			win = right_win,
+		})
+	end
 
-	-- open the tree but dont focus it
-	require("nvim-tree.api").tree.toggle({ focus = false, find_file = true })
-	
-	-- 在右侧窗口打开 dashboard
-	local right_win = vim.api.nvim_get_current_win()
-	local right_buf = vim.api.nvim_win_get_buf(right_win)
-	require("snacks").dashboard.open({
-		buf = right_buf,
-		win = right_win,
-	})
-	
 	vim.api.nvim_exec_autocmds("BufWinEnter", { buffer = require("nvim-tree.view").get_bufnr() })
 end
 
