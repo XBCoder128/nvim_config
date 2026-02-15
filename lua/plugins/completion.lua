@@ -1,184 +1,242 @@
 local kind_icons = {
-    -- LLM Provider icons
-    claude = '󰋦',
-    openai = '󱢆',
-    codestral = '󱎥',
-    gemini = '',
-    Groq = '',
-    Openrouter = '󱂇',
-    Ollama = '󰳆',
-    ['Llama.cpp'] = '󰳆',
-    Deepseek = ''
+	-- LLM Provider icons
+	claude = "󰋦",
+	Qwen3Coder = "󱢆",
+	codestral = "󱎥",
+	gemini = "",
+	Groq = "",
+	Openrouter = "󱂇",
+	Ollama = "󰳆",
+	["Llama.cpp"] = "󰳆",
+	Deepseek = "",
 }
 
 return {
-    {
-        'saghen/blink.cmp',
-        -- optional: provides snippets for the snippet source
-        dependencies = {
-            -- 'rafamadriz/friendly-snippets'
-            "nvim-tree/nvim-web-devicons",
-            "onsails/lspkind.nvim",
-        },
+	{
+		"saghen/blink.cmp",
+		-- optional: provides snippets for the snippet source
+		dependencies = {
+			-- 'rafamadriz/friendly-snippets'
+			"nvim-tree/nvim-web-devicons",
+			"onsails/lspkind.nvim",
+		},
 
-        -- use a release tag to download pre-built binaries
-        version = '1.*',
-        -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-        -- build = 'cargo build --release',
-        -- If you use nix, you can build from source using latest nightly rust with:
-        -- build = 'nix run .#build-plugin',
+		-- use a release tag to download pre-built binaries
+		version = "1.*",
+		-- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+		-- build = 'cargo build --release',
+		-- If you use nix, you can build from source using latest nightly rust with:
+		-- build = 'nix run .#build-plugin',
 
-        ---@module 'blink.cmp'
-        ---@type blink.cmp.Config
-        opts = {
-            keymap = {
-                -- If the command/function returns false or nil, the next command/function will be run.
-                preset = "none",
-                ["<A-j>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
-                ["<A-k>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
-                ["<C-n>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
-                ["<C-p>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
+		---@module 'blink.cmp'
+		---@type blink.cmp.Config
+		opts = {
+			keymap = {
+				-- If the command/function returns false or nil, the next command/function will be run.
+				preset = "none",
+				["<A-j>"] = {
+					function(cmp)
+						return cmp.select_next({ auto_insert = false })
+					end,
+					"fallback",
+				},
+				["<A-k>"] = {
+					function(cmp)
+						return cmp.select_prev({ auto_insert = false })
+					end,
+					"fallback",
+				},
+				["<C-n>"] = {
+					function(cmp)
+						return cmp.select_next({ auto_insert = false })
+					end,
+					"fallback",
+				},
+				["<C-p>"] = {
+					function(cmp)
+						return cmp.select_prev({ auto_insert = false })
+					end,
+					"fallback",
+				},
 
-                ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-                ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+				["<C-u>"] = { "scroll_documentation_up", "fallback" },
+				["<C-d>"] = { "scroll_documentation_down", "fallback" },
 
-                ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
-                ["<CR>"] = { function(cmp) return cmp.accept() end, "fallback", },
-                -- Close current completion and insert a newline
-                ["<S-CR>"] = { function(cmp)
-                    cmp.hide()
-                    return false
-                end, "fallback", },
+				["<Tab>"] = {
+					function(cmp)
+						return cmp.accept()
+					end,
+					"fallback",
+				},
+				["<CR>"] = {
+					function(cmp)
+						return cmp.accept()
+					end,
+					"fallback",
+				},
+				-- Close current completion and insert a newline
+				["<S-CR>"] = {
+					function(cmp)
+						cmp.hide()
+						return false
+					end,
+					"fallback",
+				},
 
-                -- Show/Remove completion
-                ["<A-/>"] = { function(cmp) if cmp.is_menu_visible() then return cmp.hide() else return cmp.show() end end, "fallback", },
+				-- Show/Remove completion
+				["<A-/>"] = {
+					function(cmp)
+						if cmp.is_menu_visible() then
+							return cmp.hide()
+						else
+							return cmp.show()
+						end
+					end,
+					"fallback",
+				},
 
-                ["<A-n>"] = { function(cmp) cmp.show({ providers = { "buffer" } }) end },
-                ["<A-p>"] = { function(cmp) cmp.show({ providers = { "buffer" } }) end },
+				["<A-n>"] = {
+					function(cmp)
+						cmp.show({ providers = { "buffer" } })
+					end,
+				},
+				["<A-p>"] = {
+					function(cmp)
+						cmp.show({ providers = { "buffer" } })
+					end,
+				},
 
-                -- 自动补全触发
-                ['<A-y>'] = { function(cmp) cmp.show { providers = { 'minuet' } } end },
-            },
+				-- 自动补全触发
+				["<A-y>"] = {
+					function(cmp)
+						cmp.show({ providers = { "minuet" } })
+					end,
+				},
+			},
 
-            appearance = {
-                -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-                -- Adjusts spacing to ensure icons are aligned
-                nerd_font_variant = 'normal',
-                kind_icons = kind_icons
-            },
+			appearance = {
+				-- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+				-- Adjusts spacing to ensure icons are aligned
+				nerd_font_variant = "normal",
+				kind_icons = kind_icons,
+			},
 
-            -- (Default) Only show the documentation popup when manually triggered
-            -- completion = { documentation = { auto_show = false } },
+			-- (Default) Only show the documentation popup when manually triggered
+			-- completion = { documentation = { auto_show = false } },
 
-            -- Default list of enabled providers defined so that you can extend it
-            -- elsewhere in your config, without redefining it, due to `opts_extend`
-            sources = {
-                default = function()
-                    local success, node = pcall(vim.treesitter.get_node)
-                    if success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type()) then
-                        return { "buffer" }
-                    else
-                        return { "minuet", "lazydev", "lsp", "path", "snippets", "buffer" }
-                    end
-                end,
-                providers = {
-                    minuet = {
-                        name = 'minuet',
-                        module = 'minuet.blink',
-                        score_offset = 100,
-                        async = true,
-                        -- Should match minuet.config.request_timeout * 1000,
-                        -- since minuet.config.request_timeout is in seconds
-                        timeout_ms = 3000,
-                    },
-                    lazydev = {
-                        name = "LazyDev",
-                        module = "lazydev.integrations.blink",
-                        -- make lazydev completions top priority (see `:h blink.cmp`)
-                        score_offset = 95,
-                    },
-                },
-            },
+			-- Default list of enabled providers defined so that you can extend it
+			-- elsewhere in your config, without redefining it, due to `opts_extend`
+			sources = {
+				default = function()
+					local success, node = pcall(vim.treesitter.get_node)
+					if
+						success
+						and node
+						and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
+					then
+						return { "buffer" }
+					else
+						return { "minuet", "lazydev", "lsp", "path", "snippets", "buffer" }
+					end
+				end,
+				providers = {
+					minuet = {
+						name = "minuet",
+						module = "minuet.blink",
+						score_offset = 100,
+						async = true,
+						-- Should match minuet.config.request_timeout * 1000,
+						-- since minuet.config.request_timeout is in seconds
+						timeout_ms = 3000,
+					},
+					lazydev = {
+						name = "LazyDev",
+						module = "lazydev.integrations.blink",
+						-- make lazydev completions top priority (see `:h blink.cmp`)
+						score_offset = 95,
+					},
+				},
+			},
 
-            -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
-            -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
-            -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
-            --
-            -- See the fuzzy documentation for more information
-            fuzzy = {
-                implementation = "prefer_rust_with_warning",
-                sorts = {
-                    "exact",
-                    "score",
-                    "sort_text",
-                }
-            },
+			-- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+			-- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+			-- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+			--
+			-- See the fuzzy documentation for more information
+			fuzzy = {
+				implementation = "prefer_rust_with_warning",
+				sorts = {
+					"exact",
+					"score",
+					"sort_text",
+				},
+			},
 
-            completion = {
-                trigger = { prefetch_on_insert = false },
-                accept = { auto_brackets = { enabled = true } },
-                list = { selection = { preselect = true, auto_insert = false } },
-                menu = {
-                    border = "rounded",
-                    max_height = 20,
-                    draw = {
-                        columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
-                    }
-                },
-                documentation = {
-                    auto_show = true,
-                    -- Delay before showing the documentation window
-                    auto_show_delay_ms = 200,
-                    window = {
-                        min_width = 10,
-                        max_width = 120,
-                        max_height = 20,
-                        border = "rounded",
-                        winblend = 0,
-                        winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
-                        -- Note that the gutter will be disabled when border ~= 'none'
-                        scrollbar = true,
-                        -- Which directions to show the documentation window,
-                        -- for each of the possible menu window directions,
-                        -- falling back to the next direction when there's not enough space
-                        direction_priority = {
-                            menu_north = { "e", "w", "n", "s" },
-                            menu_south = { "e", "w", "s", "n" },
-                        },
-                    },
-                },
-                ghost_text = {
-                    enabled = true,
-                    -- Show the ghost text when an item has been selected
-                    show_with_selection = true,
-                    -- Show the ghost text when no item has been selected, defaulting to the first item
-                    show_without_selection = false,
-                    -- Show the ghost text when the menu is open
-                    show_with_menu = true,
-                    -- Show the ghost text when the menu is closed
-                    show_without_menu = true,
-                },
-            },
-        },
-        signature = {
-            enabled = true,
-            window = {
-                min_width = 1,
-                max_width = 100,
-                max_height = 10,
-                border = "single", -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
-                winblend = 0,
-                winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
-                scrollbar = false, -- Note that the gutter will be disabled when border ~= 'none'
-                -- Which directions to show the window,
-                -- falling back to the next direction when there's not enough space,
-                -- or another window is in the way
-                direction_priority = { "n" },
-                -- Disable if you run into performance issues
-                treesitter_highlighting = true,
-                show_documentation = true,
-            },
-        },
-        opts_extend = { "sources.default" }
-    }
+			completion = {
+				trigger = { prefetch_on_insert = true },
+				accept = { auto_brackets = { enabled = true } },
+				list = { selection = { preselect = true, auto_insert = false } },
+				menu = {
+					border = "rounded",
+					max_height = 20,
+					draw = {
+						columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
+					},
+				},
+				documentation = {
+					auto_show = true,
+					-- Delay before showing the documentation window
+					auto_show_delay_ms = 200,
+					window = {
+						min_width = 10,
+						max_width = 120,
+						max_height = 20,
+						border = "rounded",
+						winblend = 0,
+						winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
+						-- Note that the gutter will be disabled when border ~= 'none'
+						scrollbar = true,
+						-- Which directions to show the documentation window,
+						-- for each of the possible menu window directions,
+						-- falling back to the next direction when there's not enough space
+						direction_priority = {
+							menu_north = { "e", "w", "n", "s" },
+							menu_south = { "e", "w", "s", "n" },
+						},
+					},
+				},
+				ghost_text = {
+					enabled = true,
+					-- Show the ghost text when an item has been selected
+					show_with_selection = true,
+					-- Show the ghost text when no item has been selected, defaulting to the first item
+					show_without_selection = false,
+					-- Show the ghost text when the menu is open
+					show_with_menu = true,
+					-- Show the ghost text when the menu is closed
+					show_without_menu = true,
+				},
+			},
+		},
+		signature = {
+			enabled = true,
+			window = {
+				min_width = 1,
+				max_width = 100,
+				max_height = 10,
+				border = "single", -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
+				winblend = 0,
+				winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
+				scrollbar = false, -- Note that the gutter will be disabled when border ~= 'none'
+				-- Which directions to show the window,
+				-- falling back to the next direction when there's not enough space,
+				-- or another window is in the way
+				direction_priority = { "n" },
+				-- Disable if you run into performance issues
+				treesitter_highlighting = true,
+				show_documentation = true,
+			},
+		},
+		opts_extend = { "sources.default" },
+	},
 }
