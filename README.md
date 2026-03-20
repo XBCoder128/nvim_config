@@ -25,3 +25,8 @@ brew install git-delta
 
 # Dashboard
 ![example.gif](./image/example.gif)
+
+> 公式渲染展示
+$x + y = z^2$
+
+$$\int_0^1 a\times dx \lambda$$

@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 
-opt = { noremap = true, silent = true }
+local opt = { noremap = true, silent = true }
 local function get_options(desc)
 	if desc then
 		return { noremap = true, silent = true, desc = desc }
@@ -116,15 +116,56 @@ map("n", "<A-j>", "<C-w>j", opt)
 map("n", "<A-k>", "<C-w>k", opt)
 map("n", "<A-l>", "<C-w>l", opt)
 
--- 嵌入终端配置
-map("n", "<C-`>", ":sp | :resize 15 | terminal<CR> | i", get_options("[Terminal] Open horizontal terminal"))
-map("n", "<C-`v>cd ", ":vsp | terminal<CR> | i", get_options("[Terminal] Open vertical terminal"))
+-- 嵌入终端：用 Snacks 分屏（不占 bufferline、fixbuf；见 autocmds 里 WinClosed 补编辑区）
+-- Snacks 用 opts.count 区分终端实例（tid）；底栏与右侧必须不同 count，否则会复用同一底部分屏
+local function open_snacks_terminal(slot, win_opts)
+	local ok, snacks = pcall(require, "snacks")
+	if not ok then
+		vim.cmd("belowright split | resize 15 | terminal")
+		vim.cmd.startinsert()
+		return
+	end
+	snacks.terminal(nil, {
+		count = slot,
+		win = vim.tbl_deep_extend("force", {
+			relative = "editor",
+			border = "top",
+			wo = {
+				winfixheight = true,
+			},
+		}, win_opts),
+	})
+end
+
+map("n", "<C-`>", function()
+	-- 不用过高比例（如 0.28），否则主编辑区过矮，文件末尾留白 / scrolloff 像在「被挡住」
+	local rows = math.floor(vim.o.lines * 0.18)
+	rows = math.max(10, math.min(rows, 14))
+	open_snacks_terminal(1, {
+		position = "bottom",
+		height = rows,
+	})
+end, get_options("[Terminal] Bottom split (Snacks)"))
+
+map("n", "<leader>tv", function()
+	open_snacks_terminal(2, {
+		position = "right",
+		width = 0.32,
+		border = "left",
+		wo = {
+			winfixwidth = true,
+			winfixheight = false,
+		},
+	})
+end, get_options("[Terminal] Right split (Snacks)"))
 
 map("t", "<Esc>", "<C-\\><C-N><C-w>c", opt)
-map("t", "<A-h>", "<C-\\><C-N><C-w>h", opt)
-map("t", "<A-j>", "<C-\\><C-N><C-w>j", opt)
-map("t", "<A-k>", "<C-\\><C-N><C-w>k", opt)
-map("t", "<A-l>", "<C-\\><C-N><C-w>l", opt)
+-- 终端内不要用 Alt+hjkl：多数终端把 Meta 发成 Esc+字符，会先进入终端 Normal 再执行 j/k，导致滚动/刷屏。
+-- 用 Ctrl+w 前缀（与 Normal 里 <C-w> 一致）；要把 Ctrl+w 交给 shell 时用两次：<C-w><C-w>
+map("t", "<C-w>h", "<C-\\><C-N><C-w>h", get_options("[Terminal] Win left"))
+map("t", "<C-w>j", "<C-\\><C-N><C-w>j", get_options("[Terminal] Win down"))
+map("t", "<C-w>k", "<C-\\><C-N><C-w>k", get_options("[Terminal] Win up"))
+map("t", "<C-w>l", "<C-\\><C-N><C-w>l", get_options("[Terminal] Win right"))
 
 -- visual模式下缩进代码
 map("v", "<", "<gv", opt)
@@ -145,8 +186,7 @@ map("n", "<C-d>", "15j", opt)
 -- 在visual 模式里粘贴不要复制
 map("v", "p", '"_dP', opt)
 
--- 退出
-map("i", "jk", "<ESC>", opt)
+-- 退出：`jk` 由 better-escape.nvim（`lua/plugins/edit.lua`）处理——<expr> 立刻插入 `j`，再按 `k` 时退格并 <Esc>，无原生 imap 的「等第二键」光标错位
 map("n", "q", ":q<CR>", opt)
 map("n", "qq", ":qa<CR>", opt)
 map("n", "Q", ":qa!<CR>", opt)

@@ -90,7 +90,7 @@ return {
 			},
 		},
 		config = function(_, opts)
-			local minute_lualine = require("minuet.lualine")
+			-- local minute_lualine = require("minuet.lualine")
 
 			local function show_macro_recording()
 				local recording_register = vim.fn.reg_recording()
@@ -111,15 +111,15 @@ return {
 			table.insert(opts.sections.lualine_x, 1, macro_recording_component)
 
 			-- 展示 minuet 提供者状态
-			local minuet_lualine_component = {
-				minute_lualine,
-				color = { fg = "#7aa2f7", bg = "#394b70" },
-				display_name = "provider",
-				separator = { left = "\u{e0b6}", right = "\u{e0b4}" },
-				display_on_idle = true,
-				icon = { "", align = "left" },
-			}
-			table.insert(opts.winbar.lualine_x, 1, minuet_lualine_component)
+			-- local minuet_lualine_component = {
+			-- 	minute_lualine,
+			-- 	color = { fg = "#7aa2f7", bg = "#394b70" },
+			-- 	display_name = "provider",
+			-- 	separator = { left = "\u{e0b6}", right = "\u{e0b4}" },
+			-- 	display_on_idle = true,
+			-- 	icon = { "", align = "left" },
+			-- }
+			-- table.insert(opts.winbar.lualine_x, 1, minuet_lualine_component)
 			require("lualine").setup(opts)
 		end,
 	},
@@ -176,7 +176,32 @@ return {
 	{
 		"folke/noice.nvim",
 		event = "VeryLazy",
-		keys = {},
+		keys = {
+			{
+				"<C-f>",
+				function()
+					if not require("noice.lsp").scroll(4) then
+						return "<C-f>"
+					end
+				end,
+				silent = true,
+				expr = true,
+				desc = "LSP hover 向下滚动（无浮窗时仍为翻页）",
+				mode = { "i", "n", "s" },
+			},
+			{
+				"<C-b>",
+				function()
+					if not require("noice.lsp").scroll(-4) then
+						return "<C-b>"
+					end
+				end,
+				silent = true,
+				expr = true,
+				desc = "LSP hover 向上滚动（无浮窗时仍为翻页）",
+				mode = { "i", "n", "s" },
+			},
+		},
 		opts = {
 			lsp = {
 				-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -433,29 +458,31 @@ return {
 		config = function(_, opts)
 			require("ufo").setup(opts)
 
+			-- Must match vim.o.foldlevel in init(): closeFoldsWith(0) closes *all* folds; starting at 0
+			-- makes the first `zm` collapse the whole buffer (every function at once).
+			local max_fold_level = vim.o.foldlevel
+
 			-- Ensure our ufo foldlevel is set for the buffer
 			vim.api.nvim_create_autocmd("BufReadPre", {
 				callback = function()
-					vim.b.ufo_foldlevel = 0
+					vim.b.ufo_foldlevel = max_fold_level
 				end,
 			})
 
 			---@param num integer Set the fold level to this number
 			local set_buf_foldlevel = function(num)
+				num = math.min(max_fold_level, math.max(0, num))
 				vim.b.ufo_foldlevel = num
 				require("ufo").closeFoldsWith(num)
 			end
 
 			---@param num integer The amount to change the UFO fold level by
 			local change_buf_foldlevel_by = function(num)
-				local foldlevel = vim.b.ufo_foldlevel or 0
-				-- Ensure the foldlevel can't be set negatively
-				if foldlevel + num >= 0 then
-					foldlevel = foldlevel + num
-				else
-					foldlevel = 0
+				local foldlevel = vim.b.ufo_foldlevel
+				if foldlevel == nil then
+					foldlevel = max_fold_level
 				end
-				set_buf_foldlevel(foldlevel)
+				set_buf_foldlevel(foldlevel + num)
 			end
 
 			-- Keymaps
@@ -468,7 +495,10 @@ return {
 
             -- stylua: ignore
             vim.keymap.set("n", "zM", function() set_buf_foldlevel(0) end, { desc = "[UFO] Close all folds" })
-			vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "[UFO] Open all folds" })
+			vim.keymap.set("n", "zR", function()
+				vim.b.ufo_foldlevel = max_fold_level
+				require("ufo").openAllFolds()
+			end, { desc = "[UFO] Open all folds" })
 
 			vim.keymap.set("n", "zm", function()
 				local count = vim.v.count

@@ -31,7 +31,7 @@ vim.o.autoindent = true
 vim.bo.autoindent = true
 vim.o.smartindent = true
 
--- jkhl 移动时光标周围保留8行
+-- jkhl 移动时光标周围保留行数（中间/上方有效；文件最后一行贴底时无法「造」空行，见 autocmds.lua UserEofViewPadding）
 vim.o.scrolloff = 12
 vim.o.sidescrolloff = 12
 

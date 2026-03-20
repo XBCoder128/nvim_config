@@ -1,3 +1,15 @@
+--- 比单拍 vim.schedule 略晚再 show，减少与 indent/statuscolumn 同帧抢光标（手动 `<A-/>` 等）
+local function blink_show_deferred(cmp, opts)
+	vim.defer_fn(function()
+		if opts then
+			cmp.show(opts)
+		else
+			cmp.show()
+		end
+	end, 25)
+	return true
+end
+
 local kind_icons = {
 	-- LLM Provider icons
 	claude = "󰋦",
@@ -62,14 +74,21 @@ return {
 				["<C-u>"] = { "scroll_documentation_up", "fallback" },
 				["<C-d>"] = { "scroll_documentation_down", "fallback" },
 
+				-- 须菜单打开且已选中项才 accept；避免 preselect 下 Tab/回车误接受第一项导致前缀被乱改
 				["<Tab>"] = {
 					function(cmp)
+						if not cmp.is_menu_visible() then
+							return false
+						end
 						return cmp.accept()
 					end,
 					"fallback",
 				},
 				["<CR>"] = {
 					function(cmp)
+						if not cmp.is_menu_visible() then
+							return false
+						end
 						return cmp.accept()
 					end,
 					"fallback",
@@ -83,34 +102,48 @@ return {
 					"fallback",
 				},
 
-				-- Show/Remove completion
+				-- Show/Remove completion（show 一律 defer，hide 保持同步）
 				["<A-/>"] = {
 					function(cmp)
 						if cmp.is_menu_visible() then
 							return cmp.hide()
-						else
-							return cmp.show()
 						end
+						return blink_show_deferred(cmp)
+					end,
+					"fallback",
+				},
+				["<C-Space>"] = {
+					function(cmp)
+						return blink_show_deferred(cmp)
+					end,
+					"fallback",
+				},
+				["<A-.>"] = {
+					function(cmp)
+						return blink_show_deferred(cmp)
 					end,
 					"fallback",
 				},
 
 				["<A-n>"] = {
 					function(cmp)
-						cmp.show({ providers = { "buffer" } })
+						return blink_show_deferred(cmp, { providers = { "buffer" } })
 					end,
 				},
 				["<A-p>"] = {
 					function(cmp)
-						cmp.show({ providers = { "buffer" } })
+						return blink_show_deferred(cmp, { providers = { "buffer" } })
 					end,
 				},
 
-				-- 自动补全触发
 				["<A-y>"] = {
 					function(cmp)
-						cmp.show({ providers = { "minuet" } })
+						if vim.bo.filetype == "codecompanion" then
+							return false
+						end
+						return blink_show_deferred(cmp, { providers = { "minuet" } })
 					end,
+					"fallback",
 				},
 			},
 
@@ -135,20 +168,23 @@ return {
 						and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
 					then
 						return { "buffer" }
-					else
-						return { "minuet", "lazydev", "lsp", "path", "snippets", "buffer" }
 					end
+					-- CodeCompanion 聊天里不用 Minuet
+					if vim.bo.filetype == "codecompanion" then
+						return { "lazydev", "lsp", "path", "snippets", "buffer" }
+					end
+					return { "lazydev", "lsp", "path", "snippets", "buffer"} -- , "minuet" 
 				end,
 				providers = {
-					minuet = {
-						name = "minuet",
-						module = "minuet.blink",
-						score_offset = 100,
-						async = true,
-						-- Should match minuet.config.request_timeout * 1000,
-						-- since minuet.config.request_timeout is in seconds
-						timeout_ms = 3000,
-					},
+					-- minuet = {
+					-- 	name = "minuet",
+					-- 	module = "minuet.blink",
+					-- 	score_offset = 100,
+					-- 	async = true,
+					-- 	-- Should match minuet.config.request_timeout * 1000,
+					-- 	-- since minuet.config.request_timeout is in seconds
+					-- 	timeout_ms = 3000,
+					-- },
 					lazydev = {
 						name = "LazyDev",
 						module = "lazydev.integrations.blink",
@@ -163,8 +199,9 @@ return {
 			-- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
 			--
 			-- See the fuzzy documentation for more information
+			-- 使用 lua 实现以便下面 config 里 patch iskeyword；rust 路径不经过该逻辑
 			fuzzy = {
-				implementation = "prefer_rust_with_warning",
+				implementation = "lua",
 				sorts = {
 					"exact",
 					"score",
@@ -173,20 +210,19 @@ return {
 			},
 
 			completion = {
-				trigger = { prefetch_on_insert = true },
 				accept = { auto_brackets = { enabled = true } },
-				list = { selection = { preselect = true, auto_insert = false } },
+				list = { selection = { preselect = false, auto_insert = false } },
 				menu = {
 					border = "rounded",
 					max_height = 20,
 					draw = {
+						align_to = "label",
 						columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
 					},
 				},
 				documentation = {
 					auto_show = true,
-					-- Delay before showing the documentation window
-					auto_show_delay_ms = 200,
+					auto_show_delay_ms = 350,
 					window = {
 						min_width = 10,
 						max_width = 120,
@@ -205,17 +241,7 @@ return {
 						},
 					},
 				},
-				ghost_text = {
-					enabled = true,
-					-- Show the ghost text when an item has been selected
-					show_with_selection = true,
-					-- Show the ghost text when no item has been selected, defaulting to the first item
-					show_without_selection = false,
-					-- Show the ghost text when the menu is open
-					show_with_menu = true,
-					-- Show the ghost text when the menu is closed
-					show_without_menu = true,
-				},
+				ghost_text = { enabled = true },
 			},
 		},
 		signature = {
@@ -238,5 +264,14 @@ return {
 			},
 		},
 		opts_extend = { "sources.default" },
+
+		config = function(_, opts)
+			require("blink.cmp").setup(opts)
+			-- blink#968 类：get_bounds 期间临时改 vim.bo.iskeyword 会与插入模式重绘抢光标
+			local kw = require("blink.cmp.fuzzy.lua.keyword")
+			kw.with_constant_is_keyword = function(cb)
+				return cb()
+			end
+		end,
 	},
 }

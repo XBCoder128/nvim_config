@@ -1,4 +1,22 @@
 return {
+    { -- jk 退出插入：better-escape 用 <expr> 立即插入 j，再按 k 退格并 Esc，无原生 imap jk 的 pending 光标错位
+        "max397574/better-escape.nvim",
+        event = "InsertEnter",
+        opts = {
+            timeout = 500,
+            default_mappings = false,
+            mappings = {
+                i = {
+                    j = {
+                        k = "<Esc>",
+                    },
+                },
+            },
+        },
+        config = function(_, opts)
+            require("better_escape").setup(opts)
+        end,
+    },
     { -- 自动补全括号
         "windwp/nvim-autopairs",
         event = "InsertEnter",

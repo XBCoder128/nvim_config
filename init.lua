@@ -11,4 +11,8 @@ require("keyboard")
 
 require("autocmds")
 
-require("bufferline.groups").builtin.pinned:with({ icon = "󰐃 " })
+vim.g.treesitter_cli_path = "/opt/homebrew/bin/tree-sitter"
+
+pcall(function()
+	require("bufferline.groups").builtin.pinned:with({ icon = "󰐃 " })
+end)

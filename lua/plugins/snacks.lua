@@ -96,8 +96,8 @@ return {
 						section = "terminal",
 						ttl = -1, -- 避免最后试图写到缓存文件里，大于0的话退出会很慢
 						pane = 2,
-						-- cmd = "chafa ~/.config/nvim/image/nvim.png --format symbols --symbols vhalf --size 56x25 --stretch && sleep 1&&clear",
-						cmd = "zsh ~/.config/nvim/script/loop_gif.sh ~/.config/nvim/image/ikun 0.08",
+						cmd = "chafa ~/.config/nvim/image/nvim.png --format symbols --symbols vhalf --size 56x25 --stretch",
+						-- cmd = "zsh ~/.config/nvim/script/loop_gif.sh ~/.config/nvim/image/ikun 0.08",
 						-- cmd = "zsh ~/.config/nvim/script/loop_gif.sh ~/.config/nvim/image/gif_1 0.2",
 						-- cmd = "chafa ~/.config/nvim/image/result.gif --format symbols --symbols vhalf --size 20x10 --stretch -d 0 && \033[0;0H",
 						-- cmd = "chafa ~/.config/nvim/image/result.gif --format symbols --symbols vhalf --size 20x10 --stretch -d 0 && \033[0;0H",
@@ -122,6 +122,10 @@ return {
 				},
 				sources = {
 					spelling = {
+						layout = { preset = "select" },
+					},
+					-- 上游默认 vscode：`list` 为 border=hpad，结果区几乎无框；改为 select 外圈包住 input+list
+					command_history = {
 						layout = { preset = "select" },
 					},
 				},
@@ -303,7 +307,7 @@ return {
 			},
 			-- 已打开的 tab 内代码搜索
 			{
-				"<leader>sg",
+				"<leader>so",
 				function()
 					require("snacks").picker.grep_buffers()
 				end,
