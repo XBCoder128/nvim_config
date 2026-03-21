@@ -117,7 +117,7 @@ map("n", "<A-k>", "<C-w>k", opt)
 map("n", "<A-l>", "<C-w>l", opt)
 
 -- 嵌入终端：用 Snacks 分屏（不占 bufferline、fixbuf；见 autocmds 里 WinClosed 补编辑区）
--- Snacks 用 opts.count 区分终端实例（tid）；底栏与右侧必须不同 count，否则会复用同一底部分屏
+-- Snacks 用 opts.count 区分多个 shell，类似 VS Code 底部「终端组」；与 bufferline 顶部 tab 无关
 local function open_snacks_terminal(slot, win_opts)
 	local ok, snacks = pcall(require, "snacks")
 	if not ok then
@@ -137,18 +137,91 @@ local function open_snacks_terminal(slot, win_opts)
 	})
 end
 
-map("n", "<C-`>", function()
-	-- 不用过高比例（如 0.28），否则主编辑区过矮，文件末尾留白 / scrolloff 像在「被挡住」
-	local rows = math.floor(vim.o.lines * 0.18)
-	rows = math.max(10, math.min(rows, 14))
-	open_snacks_terminal(1, {
+local function bottom_terminal_height()
+	local rows = math.floor(vim.o.lines * 0.28)
+	return math.max(12, math.min(rows, 22))
+end
+
+--- 底部面板只显示一个 Snacks 终端：切换 slot 时隐藏同 tab 内其它「靠底」的实例（右侧分屏终端不受影响）
+local function focus_bottom_snacks_terminal(slot)
+	slot = slot > 0 and slot or 1
+	local ok, snacks = pcall(require, "snacks")
+	if not ok then
+		vim.cmd("belowright split | resize " .. bottom_terminal_height() .. " | terminal")
+		vim.cmd.startinsert()
+		return
+	end
+	local win_base = {
 		position = "bottom",
-		height = rows,
-	})
-end, get_options("[Terminal] Bottom split (Snacks)"))
+		height = bottom_terminal_height(),
+		relative = "editor",
+		border = "top",
+		wo = {
+			winfixheight = true,
+		},
+	}
+	local term = assert(snacks.terminal.get(nil, {
+		count = slot,
+		create = true,
+		win = win_base,
+	}))
+	local tab = vim.api.nvim_get_current_tabpage()
+	for _, t in ipairs(snacks.terminal.list()) do
+		if t ~= term and t:win_valid() then
+			local sw = vim.w[t.win] and vim.w[t.win].snacks_win
+			if sw and sw.position == "bottom" and vim.api.nvim_win_get_tabpage(t.win) == tab then
+				t:hide()
+			end
+		end
+	end
+	if not term:win_valid() then
+		term:show()
+	end
+	if term:win_valid() then
+		vim.api.nvim_set_current_win(term.win)
+		vim.cmd.startinsert()
+	end
+end
+
+map("n", "<C-`>", function()
+	focus_bottom_snacks_terminal(vim.v.count)
+end, get_options("[Terminal] 底部面板（1–9：`` 2<C-`> `` 第二个 shell，与顶栏 tab 独立）"))
+
+--- 从列表选择底部终端 slot（已存在的会切过去，未创建则新建）
+map("n", "<leader>tl", function()
+	local ok, snacks = pcall(require, "snacks")
+	if not ok then
+		return
+	end
+	local choices = {}
+	for i = 1, 9 do
+		local label = "#" .. i
+		for _, t in ipairs(snacks.terminal.list()) do
+			local meta = vim.b[t.buf].snacks_terminal
+			if meta and meta.id == i then
+				local title = vim.b[t.buf].term_title
+				if type(title) == "string" and title ~= "" then
+					label = label .. "  " .. title
+				end
+				break
+			end
+		end
+		choices[#choices + 1] = { slot = i, text = label }
+	end
+	vim.ui.select(choices, {
+		prompt = "底部终端",
+		format_item = function(item)
+			return item.text
+		end,
+	}, function(choice)
+		if choice then
+			focus_bottom_snacks_terminal(choice.slot)
+		end
+	end)
+end, get_options("[Terminal] 选择底部终端 slot"))
 
 map("n", "<leader>tv", function()
-	open_snacks_terminal(2, {
+	open_snacks_terminal(10, {
 		position = "right",
 		width = 0.32,
 		border = "left",
