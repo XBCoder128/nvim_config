@@ -7,9 +7,9 @@ return {
 			-- 恢复会话
 			{ "<leader>ps", ":SessionRestore<CR>:NvimTreeToggle<CR>", desc = "[Session] Restore session" },
 			-- 搜索会话
-			{ "<leader>pS", ":Autosession search<CR>", desc = "[Session] Load session" },
-			-- 删除会话
-			{ "<leader>pD", ":Autosession delete<CR>", desc = "[Session] Close session" },
+			{ "<leader>pS", ":AutoSession search<CR>", desc = "[Session] Load session" },
+			-- 删除会话（picker；按名删除用 :AutoSession delete <name>）
+			{ "<leader>pD", ":AutoSession deletePicker<CR>", desc = "[Session] Delete session (picker)" },
 		},
 
 		opts = {

@@ -332,7 +332,7 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 | `<Space>L`                              | Lazy.nvim UI                        |
 | `<Space>tf`                             | 开关保存时自动格式化（conform）                 |
 | `<Space>ut`                             | Undotree                            |
-| `<Space>ps` / `<Space>pS` / `<Space>pD` | 恢复会话 / 搜索会话 / 删除会话                  |
+| `<Space>ps` / `<Space>pS` / `<Space>pD` | 恢复会话 / 搜索会话（`:AutoSession search`）/ 删除会话 picker（`:AutoSession deletePicker`） |
 | `<Space>cv`                             | Python venv-selector（`:VenvSelect`） |
 
 
