@@ -37,6 +37,7 @@ return {
                 hl.Keyword = { bold = true }
                 -- 增强函数名可见性
                 hl.Function = { bold = true }
+                hl.Comment = { fg = "#747A9E", italic = true }
 
                 -- `relativenumber` 时，光标上下行用 LineNrAbove / LineNrBelow，不是 LineNr（见 :h LineNrAbove）
                 hl.LineNr = { fg = "#47C769", bold = true}

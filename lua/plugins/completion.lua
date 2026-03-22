@@ -263,7 +263,26 @@ return {
 				show_documentation = true,
 			},
 		},
-		opts_extend = { "sources.default" },
+			opts_extend = { "sources.default" },
+
+			-- `:` / 命令行窗口：与插入模式分开配置，否则 `<A-j/k>` 不会作用在补全菜单上
+			cmdline = {
+				keymap = {
+					preset = "cmdline",
+					["<A-j>"] = {
+						function(cmp)
+							return cmp.select_next({ auto_insert = false })
+						end,
+						"fallback",
+					},
+					["<A-k>"] = {
+						function(cmp)
+							return cmp.select_prev({ auto_insert = false })
+						end,
+						"fallback",
+					},
+				},
+			},
 
 		config = function(_, opts)
 			require("blink.cmp").setup(opts)

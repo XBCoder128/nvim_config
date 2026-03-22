@@ -1,4 +1,5 @@
-vim.lsp.enable("pyright")
+-- Pyright（Mason）走 npm；远端常无 Node/npm 导致 :MasonInstall 失败。Basedpyright 走 pip，与 Mason 的 pypi 安装器一致。
+vim.lsp.enable("basedpyright")
 
 --- venv-selector 默认只重启「root_dir 与当前 project_root 一致」的 Python LSP；不一致时 Pyright 会被漏掉，
 --- 仍用系统 Python，表现为第三方包无法 resolve。此处向所有 Pyright 客户端推送解释器（与 :LspPyrightSetPythonPath 同思路）。
@@ -117,7 +118,7 @@ return {
 		opts = {
 			ensure_installed = {
 				"ruff",
-				"pyright",
+				"basedpyright",
 			},
 		},
 		opts_extend = { "ensure_installed" },

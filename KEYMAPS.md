@@ -58,7 +58,8 @@
 | n   | `<Space>tl`               | **选择**底部终端 slot（`vim.ui.select`，可看 `#` 与部分 title）                   |
 | n   | `<Space>tv`               | Snacks **右侧分屏**终端（独立 slot **10**，与底部 1～9 不共用）                       |
 | n   | `<Space>t`                | Snacks **浮动**终端（见 `snacks.lua` 里 `styles.terminal`）                 |
-| t   | `<Esc>`                   | 退出终端插入并关闭该终端窗口                                                      |
+| t   | `<Esc>`                   | 仅退出终端插入 → **终端 Normal**（不再顺带关窗，避免 remote-nvim 全屏浮窗被误关）                |
+| t   | `<A-c>`                   | 终端 Normal 后关闭该终端窗口（原 Esc 上绑的 `<C-w>c`）                               |
 | t   | `<C-w>` 再 `h`/`j`/`k`/`l` | 终端内跳窗口（**勿**用 `<A-hjkl>`：易被终端发成 Esc+字母，导致滚历史/花屏）                    |
 
 
@@ -81,7 +82,8 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 | --- | ----------------- | ----------------------------- |
 | n   | `<A-m>`           | 开关 NvimTree                   |
 | n   | `<A-,>` / `<A-.>` | 上一个 / 下一个 Buffer（BufferLine）  |
-| n   | `<A-p>`           | 固定当前 Buffer（图钉）               |
+| n   | `<A-P>`           | **remote-nvim**：`:RemoteStart`                         |
+| n   | `<A-p>`       | 固定当前 Buffer（图钉，原 `<A-p>`）                         |
 | n   | `<Space>bc`       | BufferLine 按字母选择并关闭           |
 | n   | `<A-c>`           | 关闭当前 buffer（Snacks.bufdelete） |
 
@@ -254,6 +256,7 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 
 | 模式  | 按键                    | 作用                                                                   |
 | --- | --------------------- | -------------------------------------------------------------------- |
+| c   | `<A-j>` / `<A-k>`     | **命令行** Blink 补全候选项下 / 上（`:`、`/`、`q:` 等；与插入模式键位分开配置）                |
 | i   | `<A-j>` / `<A-k>`     | 候选项下 / 上                                                             |
 | i   | `<C-n>` / `<C-p>`     | 同上                                                                   |
 | i   | `<C-u>` / `<C-d>`     | 补全文档窗滚动                                                              |
@@ -348,6 +351,8 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 | `<A-u>` / `<A-d>`     | 列表大步滚动   |
 | `<C-j>` / `<C-k>`     | 列表小步滚动   |
 
+
+**Telescope**（例如 **remote-nvim** 的列表）：在 **i / n** 模式下同样使用 `<A-j>` / `<A-k>` 上下移动选项（`plugins/telescope.lua`）。
 
 ---
 

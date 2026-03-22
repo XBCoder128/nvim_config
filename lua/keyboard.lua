@@ -232,7 +232,9 @@ map("n", "<leader>tv", function()
 	})
 end, get_options("[Terminal] Right split (Snacks)"))
 
-map("t", "<Esc>", "<C-\\><C-N><C-w>c", opt)
+-- 勿在 Esc 后接 `<C-w>c`：会关掉整个终端窗口；remote-nvim 的 `float_term` 也会因此被误关
+map("t", "<Esc>", "<C-\\><C-N>", opt)
+map("t", "<A-c>", "<C-\\><C-N><C-w>c", get_options("[Terminal] 关闭当前终端窗口"))
 -- 终端内不要用 Alt+hjkl：多数终端把 Meta 发成 Esc+字符，会先进入终端 Normal 再执行 j/k，导致滚动/刷屏。
 -- 用 Ctrl+w 前缀（与 Normal 里 <C-w> 一致）；要把 Ctrl+w 交给 shell 时用两次：<C-w><C-w>
 map("t", "<C-w>h", "<C-\\><C-N><C-w>h", get_options("[Terminal] Win left"))

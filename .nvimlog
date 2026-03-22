@@ -1,2 +1,3 @@
 WRN 2026-03-21T00:27:09.392 ?.82208    server_start:199: Failed to start server: operation not permitted: /var/folders/xp/0x_07b7s28g457cx5cx5y56r0000gn/T/nvim.xbcoder/3KdUzS/nvim.82208.0
 WRN 2026-03-21T00:27:14.866 ?.82258    server_start:199: Failed to start server: operation not permitted: /var/folders/xp/0x_07b7s28g457cx5cx5y56r0000gn/T/nvim.xbcoder/z5LpHY/nvim.82258.0
+WRN 2026-03-21T10:23:26.187 ?.22858    server_start:199: Failed to start server: operation not permitted: /var/folders/xp/0x_07b7s28g457cx5cx5y56r0000gn/T/nvim.xbcoder/qEg2UJ/nvim.22858.0
