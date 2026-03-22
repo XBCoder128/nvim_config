@@ -74,7 +74,7 @@ return {
 				["<C-u>"] = { "scroll_documentation_up", "fallback" },
 				["<C-d>"] = { "scroll_documentation_down", "fallback" },
 
-				-- 须菜单打开且已选中项才 accept；避免 preselect 下 Tab/回车误接受第一项导致前缀被乱改
+				-- 菜单可见时 accept（配合 completion.list.selection.preselect，默认已选中第一项）
 				["<Tab>"] = {
 					function(cmp)
 						if not cmp.is_menu_visible() then
@@ -211,7 +211,9 @@ return {
 
 			completion = {
 				accept = { auto_brackets = { enabled = true } },
-				list = { selection = { preselect = false, auto_insert = false } },
+				-- preselect：打开菜单时默认选中第一项，Tab/CR 可直接 accept（无需先 C-n/A-j）
+				-- auto_insert：false 则仅选中、不把候选插入正文，直到你按 Tab/CR accept
+				list = { selection = { preselect = true, auto_insert = false } },
 				menu = {
 					border = "rounded",
 					max_height = 20,

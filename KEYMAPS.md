@@ -197,6 +197,9 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 | n   | `gI`                      | 实现                         |
 | n   | `gy`                      | 类型定义                       |
 | n   | `<Space>ss` / `<Space>sS` | 当前文件符号 / 工作区符号             |
+
+
+**工作区符号 `<Space>sS`（Go / gopls）**：gopls 对 **空查询** 的 `workspace/symbol` **不返回任何结果**（不是 Snacks 坏了）。当前配置在检测到 **gopls** 时会给输入框一个初始字符 **`n`**（多数标识符里常见，便于先出一批候选），你可删掉后输入自己的前缀。若未附着 gopls，行为由各语言服务器决定。看**当前文件**结构请用 `<Space>ss`（document symbol，不依赖工作区查询）。
 | n   | `gci` / `gco`             | 入站 / 出站调用                  |
 | n   | `K`                       | 有折叠则 UFO peek，否则 LSP hover |
 
@@ -260,7 +263,7 @@ NvimTree **树内全部默认键位**与说明见 **[NVIM-TREE.md](NVIM-TREE.md)
 | i   | `<A-j>` / `<A-k>`     | 候选项下 / 上                                                             |
 | i   | `<C-n>` / `<C-p>`     | 同上                                                                   |
 | i   | `<C-u>` / `<C-d>`     | 补全文档窗滚动                                                              |
-| i   | `<Tab>` / `<CR>`      | 补全菜单打开时接受；需先用 `<C-n>`/`C-p` 或 `<A-j>`/`A-k` 选中项（未选中则 Tab 为缩进、CR 为换行） |
+| i   | `<Tab>` / `<CR>`      | 补全菜单打开时接受**当前选中项**（默认已 **preselect 第一项**，一般可直接 Tab/CR；仍可用 `<C-n>`/`C-p` 或 `<A-j>`/`A-k` 换项；菜单未打开时 Tab 为缩进、CR 为换行） |
 | i   | `<S-CR>`              | 关补全并换行                                                               |
 | i   | `<A-/>`               | 开关补全菜单                                                               |
 | i   | `<C-Space>` / `<A-.>` | 手动打开补全                                                               |

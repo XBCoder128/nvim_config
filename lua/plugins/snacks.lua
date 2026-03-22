@@ -408,7 +408,16 @@ return {
 			{
 				"<leader>sS",
 				function()
-					require("snacks").picker.lsp_workspace_symbols()
+					-- gopls：workspace/symbol 在 query 为 "" 时固定返回 0 条（性能约定，见 golang/tools gopls WorkspaceSymbols）
+					-- 输入框为空时 Snacks live 查询也是 "" → 列表空白。对 gopls 给一个常见子串作初始 query，可删改继续筛。
+					local opts = {}
+					for _, c in ipairs(vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() })) do
+						if c.name == "gopls" then
+							opts.search = "n"
+							break
+						end
+					end
+					require("snacks").picker.lsp_workspace_symbols(opts)
 				end,
 				desc = "[Snacks] LSP Workspace Symbols",
 			},

@@ -39,6 +39,14 @@ return {
                 hl.Function = { bold = true }
                 hl.Comment = { fg = "#747A9E", italic = true }
 
+                -- 未使用函数/变量等：主题默认 DiagnosticUnnecessary = terminal_black（#414868）太暗
+                -- LSP 带 unnecessary 标签的诊断会链到该组；部分语言还会用 @lsp.mod.unnecessary
+                hl.DiagnosticUnnecessary = { fg = c.dark5, italic = true }
+                hl["@lsp.mod.unnecessary"] = { fg = c.dark5, italic = true }
+                hl["@lsp.typemod.function.unnecessary"] = { fg = c.dark5, italic = true }
+                hl["@lsp.typemod.method.unnecessary"] = { fg = c.dark5, italic = true }
+                hl["@lsp.typemod.variable.unnecessary"] = { fg = c.dark5, italic = true }
+
                 -- `relativenumber` 时，光标上下行用 LineNrAbove / LineNrBelow，不是 LineNr（见 :h LineNrAbove）
                 hl.LineNr = { fg = "#47C769", bold = true}
                 hl.LineNrAbove = { fg = "#677398" }
